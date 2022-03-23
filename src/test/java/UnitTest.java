@@ -45,9 +45,8 @@ public class UnitTest {
     }
 
     @Test()
-    public void testBuyItemWithExactPrice() {
+    public void testBuyProductsWithExactPrice() {
         long price = machine.selectProductsAndGetPrice(Products.COKE);
-        Assert.assertEquals(Products.COKE.getPrice(), price);
         machine.insert(Money.VND10);
 
         Budget budget = machine.collectProductsAndChange();
@@ -57,6 +56,21 @@ public class UnitTest {
         Assert.assertEquals(Products.COKE, product);
         Assert.assertTrue(change.isEmpty());
         Assert.assertEquals(0, getTotal(change));
+    }
+
+    @Test
+    public void testBuyProductsWithMuchPrice() {
+        long price = machine.selectProductsAndGetPrice(Products.COKE);
+        machine.insert(Money.VND20);
+
+        Budget budget = machine.collectProductsAndChange();
+        Products product = budget.getProductsList().get(0);
+        List<Money> change = budget.getMoneyList();
+
+        Assert.assertEquals(Products.COKE.getPrice(), price);
+        Assert.assertEquals(Products.COKE, product);
+        Assert.assertTrue(!change.isEmpty());
+        Assert.assertEquals(20000 - Products.COKE.getPrice(), getTotal(change));
     }
 
     private long getTotal(List<Money> change){
